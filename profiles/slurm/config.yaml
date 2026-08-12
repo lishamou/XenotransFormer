@@ -1,0 +1,50 @@
+# Snakemake SLURM profile for XenotransFormer
+# Submit cluster jobs via `snakemake --profile profiles/slurm --use-conda`.
+# Requires snakemake-executor-plugin-slurm >= 0.5.0
+# (https://github.com/snakemake/snakemake-executor-plugin-slurm).
+
+__default__:
+  executor: slurm
+  jobs: 50           # max concurrent jobs
+  latency-wait: 60
+  printshellcmds: true
+  use-conda: true
+  rerun-triggers: mtime
+
+# Resource defaults; per-rule overrides live in the Snakefile
+default-resources:
+  runtime: "4h"
+  mem_mb: 32000
+  partition: "gpu"
+  qos: "normal"
+  account: "xenotransformer"   # change to your SLURM account
+
+# Per-rule resource mappings (extend as needed)
+set-resources:
+  extract_embeddings:
+    runtime: "4h"
+    mem_mb: 64000
+    gres: "gpu:a100:1"
+  ablation:
+    runtime: "6h"
+    mem_mb: 32000
+    gres: "gpu:a100:1"
+  cross_dataset_pairwise:
+    runtime: "1h"
+    mem_mb: 16000
+    gres: "gpu:a100:1"
+  cross_species:
+    runtime: "2h"
+    mem_mb: 32000
+    gres: "gpu:a100:1"
+  cross_organ_ood:
+    runtime: "2h"
+    mem_mb: 32000
+    gres: "gpu:a100:1"
+
+restart-times: 3
+max-status-checks-per-second: 1
+status-fail-priority: 0.5
+
+# Use shared filesystem for results
+storage-local-prefix: "results/"

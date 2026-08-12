@@ -1,0 +1,123 @@
+{
+  "matched": 17101,
+  "raw_vocab": {
+    "PT": 12854,
+    "DCT": 494,
+    "IC": 613,
+    "Endo": 1082,
+    "TAL": 398,
+    "Other": 724,
+    "Immune": 936
+  },
+  "per_class": [
+    {
+      "class": "PT",
+      "true_n": 12856,
+      "recall": 0.996,
+      "top_pred": "PT:12800(100%), Endo:32(0%), Other:13(0%), Immune:6(0%)"
+    },
+    {
+      "class": "TAL",
+      "true_n": 367,
+      "recall": 0.981,
+      "top_pred": "TAL:360(98%), PT:5(1%), Other:1(0%), Endo:1(0%)"
+    },
+    {
+      "class": "DCT",
+      "true_n": 212,
+      "recall": 0.901,
+      "top_pred": "DCT:191(90%), TAL:8(4%), IC:8(4%), PT:3(1%)"
+    },
+    {
+      "class": "IC",
+      "true_n": 821,
+      "recall": 0.67,
+      "top_pred": "IC:550(67%), DCT:267(33%), Other:2(0%), Endo:1(0%)"
+    },
+    {
+      "class": "Endo",
+      "true_n": 689,
+      "recall": 0.997,
+      "top_pred": "Endo:687(100%), PT:2(0%)"
+    },
+    {
+      "class": "Immune",
+      "true_n": 935,
+      "recall": 0.994,
+      "top_pred": "Immune:929(99%), PT:4(0%), Endo:2(0%)"
+    },
+    {
+      "class": "Other",
+      "true_n": 1221,
+      "recall": 0.58,
+      "top_pred": "Other:708(58%), Endo:357(29%), IC:53(4%), PT:39(3%)"
+    }
+  ],
+  "true_counts": {
+    "PT": 12856,
+    "Other": 1221,
+    "IC": 821,
+    "Endo": 689,
+    "TAL": 367,
+    "DCT": 212,
+    "Immune": 935
+  },
+  "pred_counts": {
+    "PT": 12854,
+    "DCT": 494,
+    "IC": 613,
+    "Endo": 1082,
+    "TAL": 398,
+    "Other": 724,
+    "Immune": 936
+  },
+  "confusion": {
+    "PT": {
+      "PT": 12800,
+      "Other": 13,
+      "Endo": 32,
+      "DCT": 2,
+      "TAL": 1,
+      "Immune": 6,
+      "IC": 2
+    },
+    "Other": {
+      "DCT": 34,
+      "Other": 708,
+      "IC": 53,
+      "Endo": 357,
+      "PT": 39,
+      "TAL": 29,
+      "Immune": 1
+    },
+    "IC": {
+      "IC": 550,
+      "DCT": 267,
+      "Endo": 1,
+      "PT": 1,
+      "Other": 2
+    },
+    "Endo": {
+      "Endo": 687,
+      "PT": 2
+    },
+    "TAL": {
+      "TAL": 360,
+      "Other": 1,
+      "Endo": 1,
+      "PT": 5
+    },
+    "DCT": {
+      "DCT": 191,
+      "TAL": 8,
+      "IC": 8,
+      "Endo": 2,
+      "PT": 3
+    },
+    "Immune": {
+      "Immune": 929,
+      "PT": 4,
+      "Endo": 2
+    }
+  }
+}

@@ -1,0 +1,115 @@
+# XenotransFormer — Paper code configuration
+# Read by Snakefile. All values pinned to match the manuscript's
+# "Standard protocol (locked)" table in §2.0 of the manuscript.
+
+# ============================================================
+# 1. Datasets
+# ============================================================
+datasets:
+  kidney_xeno:
+    - { id: SC0923, geo: GSE257542, n_cells: 56006, role: "primary" }
+    - { id: SC0924, geo: GSE210557, n_cells: 18096, role: "baseline_control" }
+    - { id: SC0926, geo: GSE216033, n_cells: 33628, role: "xenograft" }
+    - { id: SC0939, geo: OMIX011460, n_cells: 75324, role: "xenograft_CD45" }
+  cross_organ_ood:
+    - { id: SC0629, geo: GSE305843, n_cells: 23983, role: "islet_OOD" }
+  cross_species:
+    - { id: SN0001, zenodo: "10.5281/zenodo.17390399", n_cells: 32000,
+        n_cells_total: 128889, role: "pig_reference", stratified_by: "9_v8_classes" }
+
+# ============================================================
+# 2. Embedding (frozen TF-Metazoa)
+# ============================================================
+embedding:
+  model: "tf_metazoa"
+  checkpoint_ref: "v2026.03.0"
+  dimension: 2048
+  pooling: "mean_last_layer"
+  dtype: "float32"
+  gene_space: 5322  # cross-species orthologs
+
+# ============================================================
+# 3. Classifier head
+# ============================================================
+classifier:
+  architecture: "mlp"
+  layers: [2048, 512, 256]  # last dim is n_classes (per task)
+  activation: "relu"
+  normalization: "batch_norm"
+  dropout: [0.2, 0.1]
+  init_seed: 42
+
+# ============================================================
+# 4. Training
+# ============================================================
+training:
+  optimizer: "adamw"
+  lr: 1.0e-3
+  weight_decay: 1.0e-4
+  batch_size: 1024
+  epochs: 50
+  train_test_split: 0.80
+  random_seeds: [42, 123, 2024, 314, 1729]  # 5 seeds for seed-sensitivity
+  primary_seed: 42  # the single seed used for the locked protocol
+
+# ============================================================
+# 5. Loss function ablation (4 conditions)
+# ============================================================
+ablation:
+  methods:
+    baseline:       { loss: "ce",                       weight_dct: 1.0 }
+    plus_triplet:   { loss: "ce_plus_triplet",          weight_dct: 1.0, triplet_margin: 0.5, triplet_weight: 0.5 }
+    plus_center:    { loss: "ce_plus_center",           weight_dct: 1.0, center_weight: 0.01 }
+    rare_class_5x:  { loss: "ce",                       weight_dct: 5.0, weight_minority: 5.0 }
+  n_classes_common: 5
+  common_classes: ["PT", "TAL", "IC", "DCT", "Endo"]
+
+# ============================================================
+# 6. Cross-species kNN
+# ============================================================
+knn:
+  k: 20
+  distance: "cosine"
+  matching: "cell_level_majority_vote"  # not centroid-level
+  # Sensitivity analysis (k ∈ {5, 10, 20, 50, 100}) is performed in
+  # scripts/cross_species.py; reported in Supplementary Figure S11.
+
+# ============================================================
+# 7. Evaluation metrics
+# ============================================================
+metrics:
+  primary: "coverage_aware_macro_recall"
+  secondary:
+    - "overall_accuracy"
+    - "macro_f1"
+    - "per_class_f1"
+    - "ece_10bin"
+    - "kNN_per_type_recall"
+  bootstrap:
+    n_resamples: 1000
+    ci_level: 0.95
+  permutation:
+    n_resamples: 10000
+  multiple_comparison:
+    method: "bonferroni"
+    family: "IC_vs_6_nonIC_across_4_targets"  # = 24 tests
+    alpha_family: 0.05
+
+# ============================================================
+# 8. Statistical thresholds
+# ============================================================
+statistics:
+  wilcoxon_min_n_for_p: 4  # minimum n for paired Wilcoxon
+  bootstrap_seed: 42
+  permutation_seed: 42
+
+# ============================================================
+# 9. Output paths
+# ============================================================
+paths:
+  embeddings: "results/embeddings"
+  metrics:    "results/metrics"
+  figures:    "results/figures"
+  tables:     "results/tables"
+  supp:       "results/supplementary"
+  logs:       "results/logs"
